@@ -242,32 +242,44 @@ header {
 }
 
 .nav-tools > li:first-child > a {
-  border-radius: 1rem 0 1rem 1rem;
-  corner-shape: round bevel bevel round;
   z-index: 1;
   padding-left: 1rem;
   margin: 0;
+
+  @supports (corner-shape: bevel) {
+    border-radius: 1rem 0 1rem 1rem;
+    corner-shape: round bevel bevel round;
+  }
 }
 
 .nav-tools > li:last-child > a {
-  border-radius: 1rem 1rem 1rem 0;
-  corner-shape: bevel round round bevel;
   z-index: 1;
   padding-right: 1rem;
   margin: 0;
+
+  @supports (corner-shape: bevel) {
+    border-radius: 1rem 1rem 1rem 0;
+    corner-shape: bevel round round bevel;
+  }
 }
 
 .nav-tools > li > a {
+  border-radius: 1rem;
   position: relative;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   color: var(--text-muted);
-  corner-shape: bevel round;
-  border-radius: 1rem 0 / 3rem 0;
   background-color: var(--bg);
   border: 1px solid var(--border);
-  margin: 0 -1rem;
+  margin: 0 0.5rem;
   z-index: 3;
   transition: background-color 0.1s ease;
+
+  @supports (corner-shape: bevel) {
+    corner-shape: bevel round;
+    border-radius: 1rem 0 / 3rem 0;
+    padding: 0.5rem 1.5rem;
+    margin: 0 -1rem;
+  }
 }
 
 .nav-tools > li > a:hover, .nav-tools > li > a:focus, .nav-brand:hover, .nav-brand:focus {
