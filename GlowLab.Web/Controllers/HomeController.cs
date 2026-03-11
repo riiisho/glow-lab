@@ -11,6 +11,18 @@ public class HomeController : Controller
         return View();
     }
 
+    [Route("burn-in")]
+    public IActionResult BurnIn()
+    {
+        return View();
+    }
+
+    [Route("dead-pixel")]
+    public IActionResult DeadPixel()
+    {
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

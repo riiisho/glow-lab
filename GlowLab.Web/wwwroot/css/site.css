@@ -33,8 +33,99 @@ a {
   text-decoration: none;
 }
 
+/* ── Burn In ── */
+.burn-in-screen, .dead-pixel-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.dead-pixel-screen {
+  transition: background-color 0.3s ease;
+}
+
+.burn-in-controls {
+  position: fixed;
+  padding: 4rem;
+  inset-block-end: 0.5rem;
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 10;
+}
+
+.burn-in-controls:hover {
+  opacity: 1;
+}
+
+.grey-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #000, #fff);
+  outline: none;
+  cursor: pointer;
+}
+
+.grey-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: oklch(0.5 0 0);
+  border: 2px solid oklch(0.8 0 0 / 0.5);
+  mix-blend-mode: difference;
+}
+
+.grey-slider::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: oklch(0.5 0 0);
+  border: 2px solid oklch(0.8 0 0 / 0.5);
+  mix-blend-mode: difference;
+  cursor: pointer;
+}
+
+.burn-in-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: oklch(0.5 0 0);
+  mix-blend-mode: difference;
+}
+
+.burn-in-swatches {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.swatch {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background-color: var(--color);
+  border: 2px solid oklch(0.5 0 0 / 0.3);
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.swatch:hover {
+  transform: scale(1.2);
+  border-color: oklch(0.5 0 0 / 0.6);
+}
+
 /* ── Floating nav ── */
 header, footer {
+  z-index: 10;
+  position: relative;
   transition: opacity 0.3s ease;
 }
 

@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Dead Pixel";
+    Layout = "_Layout";
+}
+
+<div class="dead-pixel-screen">
+    <div class="burn-in-controls">
+        <span class="burn-in-label">Dead Pixel Test</span>
+        <div class="burn-in-swatches">
+            <button class="swatch" style="--color: #ffffff" data-color="#ffffff" title="White"></button>
+            <button class="swatch" style="--color: #ff0000" data-color="#ff0000" title="Red"></button>
+            <button class="swatch" style="--color: #00ff00" data-color="#00ff00" title="Green"></button>
+            <button class="swatch" style="--color: #0000ff" data-color="#0000ff" title="Blue"></button>
+            <button class="swatch" style="--color: #000000" data-color="#000000" title="Black"></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const screen = document.querySelector('.dead-pixel-screen');
+
+    document.querySelectorAll('.swatch').forEach(btn => {
+        btn.addEventListener('click', () => {
+            screen.style.backgroundColor = btn.dataset.color;
+        });
+    });
+
+    screen.style.backgroundColor = '#ffffff';
+</script>
+}
