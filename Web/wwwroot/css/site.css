@@ -84,7 +84,7 @@ a {
 .burn-in-controls {
   position: fixed;
   padding: 4rem;
-  inset-block-end: 0.5rem;
+  inset-block-end: 2rem;
   inset-inline: 0;
   display: flex;
   flex-direction: column;
@@ -174,7 +174,7 @@ a {
 
 .interface-hint {
   position: fixed;
-  inset-block-end: 1rem;
+  inset-block-end: 1.5rem;
   inset-inline: 0;
   text-align: center;
   font-size: 0.7rem;
@@ -284,4 +284,44 @@ header {
 
 .nav-tools > li > a:hover, .nav-tools > li > a:focus, .nav-brand:hover, .nav-brand:focus {
   background-color: var(--bg-light);
+}
+
+@media (max-width: 640px) {
+  header {
+    padding: 0.75rem 1rem;
+  }
+
+  header > div {
+    display: none;
+  }
+
+  .floating-nav {
+    width: 100%;
+  }
+
+  .nav-tools {
+    width: 100%;
+  }
+
+  .nav-tools > li {
+    flex: 1;
+  }
+
+  .nav-tools > li > a {
+    display: block;
+    text-align: center;
+    padding: 0.5rem 0;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .nav-tools > li:first-child > a {
+    border-radius: 1rem 0 0 1rem;
+    padding-left: 0;
+  }
+
+  .nav-tools > li:last-child > a {
+    border-radius: 0 1rem 1rem 0;
+    padding-right: 0;
+  }
 }
