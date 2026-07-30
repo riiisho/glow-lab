@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screensaver | OLEDLab</title>
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/site.css" />
+  <link rel="stylesheet" href="../css/utility-classes.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <a class="nav-brand" href="../">OLEDLab</a>
+      <span class="text-muted interface-hint-desktop">ESC to toggle interface</span>
+    </div>
+    <nav class="floating-nav">
+      <ul class="nav-tools">
+        <li><a href="../burn-in/">Burn In</a></li>
+        <li><a href="../dead-pixel/">Dead Pixel</a></li>
+        <li><a href="../screensaver/">Screensaver</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="interface-hint interface-hint-mobile text-muted">two-finger tap to toggle interface</div>
+
+  <main role="main">
+    <canvas id="bh-canvas"></canvas>
+  </main>
+
+  <footer class="text-muted">
+    <div class="container">
+      &copy; <span id="year"></span> OLEDLab
+    </div>
+  </footer>
+
+  <script src="../js/site.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const canvas = document.getElementById('bh-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, cx, cy, BH_R;
+
+    const TILT = 0.26;
+    const D_IN = 2.0;
+    const D_OUT = 9.5;
+    const PH_R = 1.38;
+    const SHAD_R = 1.30;
+
+    const stars = Array.from({ length: 350 }, () => {
+      const r = Math.random() * 1.1 + 0.2;
+      const cool = Math.random() > 0.55;
+      const hue = cool ? 210 + Math.random() * 40 : 35 + Math.random() * 20;
+      const sat = Math.round(10 + Math.random() * 25);
+      return {
+        x: Math.random(), y: Math.random(), r,
+        baseA: Math.random() * 0.4 + 0.2,
+        sparkleAmp: 0.06 + Math.random() * (r > 0.9 ? 0.32 : 0.12),
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.4 + Math.random() * 1.4,
+        bright: r > 0.9,
+        color: `hsl(${hue},${sat}%,98%)`,
+      };
+    });
+
+    let diskP = [], infallP = [], photonP = [], jetP = [];
+
+    function makeDisk() {
+      const r = BH_R * D_IN + Math.pow(Math.random(), 2.2) * BH_R * (D_OUT - D_IN);
+      const normR = (r - BH_R * D_IN) / (BH_R * (D_OUT - D_IN));
+      return {
+        angle: Math.random() * Math.PI * 2, r,
+        speed: 0.55 * Math.pow(r / BH_R, -1.5),
+        size: 0.18 + Math.random() * 1.55 * (1 - normR * 0.65),
+        alpha: 0.38 + Math.random() * 0.62,
+        zOff: (Math.random() - 0.5) * 0.09,
+        infall: false,
+      };
+    }
+
+    function makeInfall() {
+      const r = BH_R * (D_IN + Math.random() * 4.5);
+      return {
+        angle: Math.random() * Math.PI * 2, r,
+        speed: 0.55 * Math.pow(r / BH_R, -1.5),
+        drift: BH_R * (0.06 + Math.random() * 0.13),
+        size: 0.15 + Math.random() * 0.75,
+        alpha: 0.28 + Math.random() * 0.45,
+        zOff: (Math.random() - 0.5) * 0.07,
+        infall: true,
+      };
+    }
+
+    function makePhoton() {
+      const r = BH_R * (PH_R + (Math.random() - 0.5) * 0.18);
+      return {
+        angle: Math.random() * Math.PI * 2, r,
+        speed: 1.1 * Math.pow(PH_R, -1.5),
+        size: 0.12 + Math.random() * 0.45,
+        alpha: 0.48 + Math.random() * 0.52,
+      };
+    }
+
+    function makeJet(dir) {
+      const v = 2.5 + Math.random() * 3.0;
+      return {
+        x: cx, y: cy,
+        vx: (Math.random() - 0.5) * 0.45 * v * BH_R * 0.09,
+        vy: -dir * v * BH_R,
+        life: 0,
+        maxLife: 0.9 + Math.random() * 1.2,
+        size: 0.25 + Math.random() * 0.65,
+        dir,
+      };
+    }
+
+    function buildParticles() {
+      diskP = Array.from({ length: 1500 }, makeDisk);
+      infallP = Array.from({ length: 110 }, makeInfall);
+      photonP = Array.from({ length: 320 }, makePhoton);
+      jetP = Array.from({ length: 180 }, () => {
+        const dir = Math.random() > 0.5 ? 1 : -1;
+        const p = makeJet(dir);
+        const t = Math.random();
+        p.x += p.vx * p.maxLife * t;
+        p.y += p.vy * p.maxLife * t;
+        p.life = p.maxLife * t;
+        return p;
+      });
+    }
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      cx = W / 2;
+      cy = H / 2;
+      BH_R = Math.min(W, H) * 0.07;
+      buildParticles();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function pColor(r, angle) {
+      const normR = Math.max(0, Math.min(1, (r - BH_R * D_IN) / (BH_R * (D_OUT - D_IN))));
+      const t = 1 - normR;
+      const dop = 1 + 0.65 * Math.max(0, -Math.cos(angle));
+      const b = Math.min(1, Math.pow(t, 0.55) * dop);
+      if (b > 0.83) return `hsl(${Math.round(220 - b * 90)},${Math.round(b * 38)}%,${Math.round(76 + b * 20)}%)`;
+      if (b > 0.46) return `hsl(${Math.round(36 - (b - 0.46) / 0.37 * 22)},95%,${Math.round(28 + b * 52)}%)`;
+      return `hsl(14,88%,${Math.round(10 + b * 38)}%)`;
+    }
+
+    function behindShadow(x, y) {
+      const dx = x - cx, dy = y - cy;
+      return dx * dx + dy * dy < BH_R * BH_R * SHAD_R * SHAD_R;
+    }
+
+    let last = 0;
+
+    function frame(ts) {
+      const dt = Math.min((ts - last) / 1000, 0.05);
+      last = ts;
+
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+
+      for (const s of stars) {
+        const dx = s.x * W - cx, dy = s.y * H - cy;
+        const d2 = dx * dx + dy * dy;
+        const lens = BH_R * BH_R * 4;
+        const f = d2 > 0 ? 1 + lens / (d2 + lens * 0.5) * 0.18 : 1;
+        const lx = cx + dx * f, ly = cy + dy * f;
+        const tw = Math.sin(ts * 0.001 * s.speed + s.phase)
+          + 0.4 * Math.sin(ts * 0.001 * s.speed * 2.3 + s.phase * 1.7);
+        const a = Math.max(0.02, Math.min(1, s.baseA + s.sparkleAmp * tw / 1.4));
+        const r = s.bright ? s.r * (1 + 0.18 * Math.max(0, tw / 1.4)) : s.r;
+        if (s.bright && a > 0.3) {
+          const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 4);
+          g.addColorStop(0, `rgba(255,255,255,${(a * 0.35).toFixed(3)})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.beginPath(); ctx.arc(lx, ly, r * 4, 0, Math.PI * 2);
+          ctx.fillStyle = g; ctx.fill();
+        }
+        ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        ctx.fillStyle = s.color; ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      for (const p of diskP) p.angle += p.speed * dt;
+      for (const p of photonP) p.angle += p.speed * dt;
+      for (const p of infallP) {
+        p.r -= p.drift * dt;
+        p.speed = 0.65 * Math.pow(Math.max(p.r, BH_R) / BH_R, -1.5);
+        p.angle += p.speed * dt;
+        if (p.r < BH_R * (SHAD_R + 0.1)) Object.assign(p, makeInfall());
+      }
+      for (const p of jetP) {
+        p.life += dt;
+        if (p.life >= p.maxLife) {
+          const dir = p.dir; Object.assign(p, makeJet(dir));
+          p.x = cx + (Math.random() - 0.5) * BH_R * 0.3; p.y = cy;
+        }
+        p.x += p.vx * dt; p.y += p.vy * dt;
+      }
+
+      const all = [...diskP, ...infallP];
+      all.sort((a, b) => Math.sin(a.angle) - Math.sin(b.angle));
+
+      for (const p of all) {
+        if (Math.sin(p.angle) >= 0) break;
+        const x = cx + Math.cos(p.angle) * p.r;
+        const y = cy + (Math.sin(p.angle) + p.zOff) * p.r * TILT;
+        if (behindShadow(x, y)) continue;
+        let a = p.alpha;
+        if (p.infall) a *= Math.max(0, 1 - Math.max(0, 1 - (p.r - BH_R * SHAD_R) / (BH_R * 4)) * 0.7);
+        ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = pColor(p.r, p.angle); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, BH_R * SHAD_R, 0, Math.PI * 2);
+      ctx.fillStyle = '#000'; ctx.fill();
+
+      const edge = ctx.createRadialGradient(cx, cy, BH_R * (SHAD_R - 0.1), cx, cy, BH_R * 1.72);
+      edge.addColorStop(0, 'rgba(0,0,0,0)');
+      edge.addColorStop(0.40, 'rgba(255,148,32,0.22)');
+      edge.addColorStop(0.70, 'rgba(255,80,10,0.07)');
+      edge.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(cx, cy, BH_R * 1.72, 0, Math.PI * 2);
+      ctx.fillStyle = edge; ctx.fill();
+
+      for (const p of jetP) {
+        const dist = Math.abs(p.y - cy);
+        if (dist > BH_R * 9) continue;
+        const prog = p.life / p.maxLife;
+        const fade = Math.sin(prog * Math.PI) * Math.max(0, 1 - dist / (BH_R * 8.5));
+        if (fade <= 0) continue;
+        ctx.globalAlpha = fade * 0.12;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (1 + prog * 0.5), 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(205,65%,${Math.round(58 + prog * 32)}%)`;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      for (const p of all) {
+        if (Math.sin(p.angle) < 0) continue;
+        const x = cx + Math.cos(p.angle) * p.r;
+        const y = cy + (Math.sin(p.angle) + p.zOff) * p.r * TILT;
+        const dx3 = x - cx, dy3 = (y - cy) / TILT;
+        if (dx3 * dx3 + dy3 * dy3 < BH_R * BH_R * 0.93) continue;
+        let a = p.alpha;
+        if (p.infall) a *= Math.max(0, 1 - Math.max(0, 1 - (p.r - BH_R * SHAD_R) / (BH_R * 4)) * 0.7);
+        ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = pColor(p.r, p.angle);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

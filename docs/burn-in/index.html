@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burn In | OLEDLab</title>
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/site.css" />
+  <link rel="stylesheet" href="../css/utility-classes.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <a class="nav-brand" href="../">OLEDLab</a>
+      <span class="text-muted interface-hint-desktop">ESC to toggle interface</span>
+    </div>
+    <nav class="floating-nav">
+      <ul class="nav-tools">
+        <li><a href="../burn-in/">Burn In</a></li>
+        <li><a href="../dead-pixel/">Dead Pixel</a></li>
+        <li><a href="../screensaver/">Screensaver</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="interface-hint interface-hint-mobile text-muted">two-finger tap to toggle interface</div>
+
+  <main role="main">
+    <div class="burn-in-screen">
+      <div class="burn-in-controls">
+        <span class="burn-in-label">Burn In Test</span>
+        <input class="grey-slider" type="range" min="0" max="255" value="128" />
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-muted">
+    <div class="container">
+      &copy; <span id="year"></span> OLEDLab
+    </div>
+  </footer>
+
+  <script src="../js/site.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const screen = document.querySelector('.burn-in-screen');
+    const slider = document.querySelector('.grey-slider');
+    function applyGrey() {
+      const value = slider.value;
+      screen.style.backgroundColor = `rgb(${value}, ${value}, ${value})`;
+    }
+    slider.addEventListener('input', applyGrey);
+    applyGrey();
+  </script>
+</body>
+</html>

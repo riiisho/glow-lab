@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dead Pixel | OLEDLab</title>
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/site.css" />
+  <link rel="stylesheet" href="../css/utility-classes.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <a class="nav-brand" href="../">OLEDLab</a>
+      <span class="text-muted interface-hint-desktop">ESC to toggle interface</span>
+    </div>
+    <nav class="floating-nav">
+      <ul class="nav-tools">
+        <li><a href="../burn-in/">Burn In</a></li>
+        <li><a href="../dead-pixel/">Dead Pixel</a></li>
+        <li><a href="../screensaver/">Screensaver</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="interface-hint interface-hint-mobile text-muted">two-finger tap to toggle interface</div>
+
+  <main role="main">
+    <div class="dead-pixel-screen">
+      <div class="burn-in-controls">
+        <span class="burn-in-label">Dead Pixel Test</span>
+        <div class="burn-in-swatches">
+          <button class="swatch" style="--color: #ffffff" data-color="#ffffff" title="White"></button>
+          <button class="swatch" style="--color: #ff0000" data-color="#ff0000" title="Red"></button>
+          <button class="swatch" style="--color: #00ff00" data-color="#00ff00" title="Green"></button>
+          <button class="swatch" style="--color: #0000ff" data-color="#0000ff" title="Blue"></button>
+          <button class="swatch" style="--color: #000000" data-color="#000000" title="Black"></button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-muted">
+    <div class="container">
+      &copy; <span id="year"></span> OLEDLab
+    </div>
+  </footer>
+
+  <script src="../js/site.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const screen = document.querySelector('.dead-pixel-screen');
+    document.querySelectorAll('.swatch').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        screen.style.backgroundColor = btn.dataset.color;
+      });
+    });
+    screen.style.backgroundColor = '#ffffff';
+  </script>
+</body>
+</html>

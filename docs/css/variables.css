@@ -1,0 +1,30 @@
+:root {
+  --bg-dark: oklch(0% 0 0);
+  --bg: oklch(10% 0.05 330);
+  --bg-opacity75: oklch(10% 0.05 330 / 0.75);
+  --bg-light: oklch(25% 0.05 330);
+  --bg-light-opacity75: oklch(25% 0.05 330 / 0.75);
+  --text-emphasis: oklch(100% 0.05 330);
+  --text: oklch(90% 0.05 330);
+  --text-muted: oklch(50% 0.05 330);
+
+  --highlight: oklch(0.5 0.2 345);
+  --border: var(--bg-light-opacity75);
+  --border-muted: oklch(0.7 0.08 340);
+  --primary: oklch(0.8 0.15 345);
+  --secondary: oklch(0.4 0.1 160);
+
+  --shadow-s: inset 0 1px 2px oklch(0.8 0.15 345 / 25%),
+              0 1px 2px oklch(0.15 0.08 345 / 25%),
+              0 2px 4px oklch(0.3 0.08 345 / 25%);
+  --shadow-m: inset 0 1px 2px oklch(0.8 0.15 345 / 25%),
+              0 2px 4px oklch(0.15 0.08 345 / 25%),
+              0 4px 8px oklch(0.3 0.08 345 / 25%);
+  --shadow-l: inset 0 1px 2px oklch(0.8 0.15 345 / 25%),
+              0 4px 6px oklch(0.15 0.08 345 / 25%),
+              0 4px 8px oklch(0.3 0.08 345 / 25%);
+
+  --shadow-inset: inset 0 -1px 2px oklch(0.8 0.15 345 / 25%),
+              inset 0 4px 6px oklch(0.15 0.08 345 / 25%),
+              inset 0 4px 8px oklch(0.3 0.08 345 / 25%);
+}
